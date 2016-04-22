@@ -17,6 +17,7 @@ public class SearchAdsStarter {
 
   public static String FILE_NAME = "ads-data.json";
   public static int K = 2;
+  public static float FILTER_THRESHOLD= .5f;
 
   public static void main(String[] args) {
     AdsIndex adsIndex = new AdsIndexImpl();
@@ -24,22 +25,17 @@ public class SearchAdsStarter {
 
     QueryParser queryParser = new QueryParserImpl();
 
-    AdsOptimization adsOptimizer = new AdsOptimizationImpl();
-
     while (true) {
       Scanner reader = new Scanner(System.in);
       System.out.println("Input your query:");
       String query = reader.next();
       List<String> keyWords = queryParser.parseQuery(query);
       List<AdsStatsInfo> candidateAds = adsIndex.indexMatch(keyWords);
-      List<String> selectedAds = adsOptimizer.filterAds(candidateAds)
-                                             .rankAdsAndSelectTopK(candidateAds, K)
-                                             .adsPricingAndAllocation(candidateAds, adsInventory);
-      Iterator<String> iterator = selectedAds.iterator();
-      while (iterator.hasNext()) {
-        String adsInfo = iterator.next();
-        System.out.println(adsInfo);
-      }
+      AdsOptimization adsOptimizer = new AdsOptimizationImpl(candidateAds);
+      AdsOptimization selectedAds = adsOptimizer.filterAds(FILTER_THRESHOLD)
+                                                .rankAdsAndSelectTopK(K)
+                                                .adsPricingAndAllocation(adsInventory);
+      System.out.println(selectedAds);
       reader.close();
     }
   }

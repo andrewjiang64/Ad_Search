@@ -6,22 +6,31 @@ import com.bitTiger.searchAds.adsInfo.AdsInventory;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 
 public class AdsOptimizationImpl implements AdsOptimization {
+  private final List<AdsStatsInfo> _candidateAds;
+
+  public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds) {
+    _candidateAds = candidateAds;
+  }
 
   @Override
-  public AdsOptimization filterAds(List<AdsStatsInfo> candidateAds) {
+  public AdsOptimization filterAds(float threshold) {
+    return null;
+  }
+
+  @Override
+  public AdsOptimization rankAdsAndSelectTopK(int K) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public AdsOptimization rankAdsAndSelectTopK(List<AdsStatsInfo> candidateAds, int K) {
+  public AdsOptimization adsPricingAndAllocation(AdsInventory adsInventory) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public List<String> adsPricingAndAllocation(List<AdsStatsInfo> candidateAds, AdsInventory adsInventory) {
-    // TODO Auto-generated method stub
+  public String toString() {
     return null;
   }
 
