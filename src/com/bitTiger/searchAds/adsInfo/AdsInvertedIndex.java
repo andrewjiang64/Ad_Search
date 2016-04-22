@@ -13,7 +13,7 @@ public class AdsInvertedIndex {
   }
 
   public void insertIndex(String keyWord, int adsId) {
-    if (_adsInvertedIndex.containsKey(keyWord)) {
+    if (!_adsInvertedIndex.containsKey(keyWord)) {
       _adsInvertedIndex.put(keyWord, new ArrayList<Integer>());
     }
     _adsInvertedIndex.get(keyWord).add(adsId);
