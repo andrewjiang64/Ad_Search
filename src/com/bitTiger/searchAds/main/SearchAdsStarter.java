@@ -17,7 +17,7 @@ public class SearchAdsStarter {
 
   public static String FILE_NAME = "ads-data.json";
   public static int K = 2;
-  public static float FILTER_THRESHOLD= .5f;
+  public static float FILTER_THRESHOLD = .5f;
 
   public static void main(String[] args) {
     AdsIndex adsIndex = new AdsIndexImpl();
