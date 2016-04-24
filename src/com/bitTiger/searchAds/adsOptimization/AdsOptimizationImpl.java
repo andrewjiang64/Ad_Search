@@ -5,17 +5,32 @@ import java.util.List;
 
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInventory;
+import com.bitTiger.searchAds.index.IndexMatchResult;
 
 public class AdsOptimizationImpl implements AdsOptimization {
-<<<<<<< HEAD
-    private final List<AdsStatsInfo> _candidateAds;
+    private final IndexMatchResult _candidateAds;
 
-    public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds) {
+    public AdsOptimizationImpl(IndexMatchResult candidateAds) {
         _candidateAds = candidateAds;
     }
 
     @Override
     public AdsOptimization filterAds(float threshold) {
+        if (_candidateAds == null) {
+            return null;
+        }
+        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
+        while (iterator.hasNext()) {
+            AdsStatsInfo info = iterator.next();
+            if (info.getRelevanceScore() < threshold) {
+                iterator.remove();
+            }
+        }
+        return new AdsOptimizationImpl(_candidateAds);
+    }
+
+    @Override
+    public AdsOptimization filterAdsWithLowPrice(float threshold) {
         if (_candidateAds == null) {
             return null;
         }
@@ -36,7 +51,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
     }
 
     @Override
-    public AdsOptimization adsPricingAndAllocation(AdsInventory adsInventory) {
+    public AdsOptimization adsPricingAndAllocation() {
         if (_candidateAds == null) {
             return null;
         }
@@ -67,41 +82,10 @@ public class AdsOptimizationImpl implements AdsOptimization {
         }
         return result;
     }
-=======
-  private final List<AdsStatsInfo> _candidateAds;
 
-  public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds) {
-    _candidateAds = candidateAds;
-  }
-
-  @Override
-  public AdsOptimization filterAds(float threshold) {
-    return null;
-  }
-
-  @Override
-  public AdsOptimization rankAdsAndSelectTopK(int K) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public AdsOptimization adsPricingAndAllocation(CampaignInventory campaignInventory) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public String toString() {
-    return null;
-  }
->>>>>>> master
-
-  @Override
-  public AdsOptimization deDup() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-
+    @Override
+    public AdsOptimization deDup() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
