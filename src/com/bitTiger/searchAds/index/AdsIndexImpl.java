@@ -6,18 +6,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.bitTiger.searchAds.adsInfo.AdsCampaignInfo;
+import com.bitTiger.searchAds.adsInfo.AdsInfo;
 import com.bitTiger.searchAds.adsInfo.AdsInventory;
 import com.bitTiger.searchAds.adsInfo.AdsInvertedIndex;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
+import com.bitTiger.searchAds.adsInfo.CampaignInfo;
+import com.bitTiger.searchAds.adsInfo.CampaignInventory;
 
 public class AdsIndexImpl implements AdsIndex {
 
-  private final AdsInventory _adsForwardedIndex;
+  private final AdsInventory _adsInventory;
+  private final CampaignInventory _campaignInventory;
   private final AdsInvertedIndex _adsInvertedIndex;
 
   public AdsIndexImpl() {
-     _adsForwardedIndex = new AdsInventory();
+     _adsInventory = new AdsInventory();
+     _campaignInventory = new CampaignInventory();
      _adsInvertedIndex = new AdsInvertedIndex();
   }
 
@@ -43,10 +47,11 @@ public class AdsIndexImpl implements AdsIndex {
         Map.Entry<Integer, Integer> hitCountsEntry = hitCountsIterator.next();
         Integer adsId = hitCountsEntry.getKey();
         Integer hitCount = hitCountsEntry.getValue();
-        AdsCampaignInfo adsInfo = _adsForwardedIndex.findAds(adsId);
-        if (adsInfo != null && adsInfo.getBudget() > 0) {
+        AdsInfo adsInfo = _adsInventory.findAds(adsId);
+        CampaignInfo campaignInfo = _campaignInventory.findCampaign(adsInfo.getCampaignId());
+        if (adsInfo != null && campaignInfo.getBudget() > 0) {
           AdsStatsInfo adsStatsInfo = new AdsStatsInfo(adsId);
-          adsStatsInfo.setRelevanceScore(hitCount*1.0f/_adsForwardedIndex.findAds(adsId).getAdsKeyWords().size());
+          adsStatsInfo.setRelevanceScore(hitCount*1.0f/adsInfo.getAdsKeyWords().size());
           adsStatsInfoList.add(adsStatsInfo);
         }
       }
@@ -55,9 +60,9 @@ public class AdsIndexImpl implements AdsIndex {
   }
 
   @Override
-  public AdsInventory buildIndex(String fileName) {
+  public CampaignInventory buildIndex(String fileName) {
+    return _campaignInventory;
     // TODO Auto-generated method stub
-    return null;
   }
 
 }
