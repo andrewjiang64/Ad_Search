@@ -1,38 +1,71 @@
 package com.bitTiger.searchAds.adsOptimization;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.bitTiger.searchAds.adsInfo.AdsInventory;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 
 public class AdsOptimizationImpl implements AdsOptimization {
-  private final List<AdsStatsInfo> _candidateAds;
+    private final List<AdsStatsInfo> _candidateAds;
 
-  public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds) {
-    _candidateAds = candidateAds;
-  }
+    public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds) {
+        _candidateAds = candidateAds;
+    }
 
-  @Override
-  public AdsOptimization filterAds(float threshold) {
-    return null;
-  }
+    @Override
+    public AdsOptimization filterAds(float threshold) {
+        if (_candidateAds == null) {
+            return null;
+        }
+        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
+        while (iterator.hasNext()) {
+            AdsStatsInfo info = iterator.next();
+            if (info.getRelevanceScore() < threshold) {
+                iterator.remove();
+            }
+        }
+        return new AdsOptimizationImpl(_candidateAds);
+    }
 
-  @Override
-  public AdsOptimization rankAdsAndSelectTopK(int K) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    @Override
+    public AdsOptimization rankAdsAndSelectTopK(int K) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-  @Override
-  public AdsOptimization adsPricingAndAllocation(AdsInventory adsInventory) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    @Override
+    public AdsOptimization adsPricingAndAllocation(AdsInventory adsInventory) {
+        if (_candidateAds == null) {
+            return null;
+        }
+        float MINIMAL = 3; // if only one ads in the list, it pays the minimal
+        // value
+        if (_candidateAds.size() == 1) {
+            _candidateAds.get(0).setCpc(MINIMAL);
+            return new AdsOptimizationImpl(_candidateAds);
+        }
+        for (int i = 0; i < _candidateAds.size() - 1; i++) {
 
-  @Override
-  public String toString() {
-    return null;
-  }
+        }
+        return new AdsOptimizationImpl(_candidateAds);
+
+    }
+
+    @Override
+    public String toString() {
+        if (_candidateAds == null) {
+            return "";
+        }
+        String result = "Ads Id || Quality Score || Rank Score";
+        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
+        while (iterator.hasNext()) {
+            AdsStatsInfo info = iterator.next();
+            result = result + info.getAdsId() + " " + info.getQualityScore()
+                    + " " + info.getRankScore() + "\n";
+        }
+        return result;
+    }
 
 
 }
