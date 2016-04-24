@@ -49,9 +49,10 @@ public class AdsIndexImpl implements AdsIndex {
         Integer hitCount = hitCountsEntry.getValue();
         AdsInfo adsInfo = _adsInventory.findAds(adsId);
         if (adsInfo != null) {
-          CampaignInfo campaignInfo = _campaignInventory.findCampaign(adsInfo.getCampaignId());
+          int campaignId = adsInfo.getCampaignId();
+          CampaignInfo campaignInfo = _campaignInventory.findCampaign(campaignId);
           if (campaignInfo.getBudget() > 0) {
-            AdsStatsInfo adsStatsInfo = new AdsStatsInfo(adsId);
+            AdsStatsInfo adsStatsInfo = new AdsStatsInfo(campaignId);
             adsStatsInfo.setRelevanceScore(hitCount*1.0f/adsInfo.getAdsKeyWords().size());
             adsStatsInfoList.add(adsStatsInfo);
           }
