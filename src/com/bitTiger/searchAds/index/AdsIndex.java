@@ -4,11 +4,12 @@ import java.util.List;
 
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInventory;
+import com.bitTiger.searchAds.adsInfo.Inventory;
 
 public interface AdsIndex {
 
-    CampaignInventory buildIndex(String fileName);
+    Inventory buildIndex(String fileName);
 
-    IndexMatchResult indexMatch(List<String> keyWords);
+    List<AdsStatsInfo> indexMatch(List<String> keyWords);
 
 }

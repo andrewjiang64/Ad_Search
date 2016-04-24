@@ -12,6 +12,7 @@ import com.bitTiger.searchAds.adsInfo.AdsInvertedIndex;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInventory;
+import com.bitTiger.searchAds.adsInfo.Inventory;
 
 public class AdsIndexImpl implements AdsIndex {
 
@@ -25,10 +26,9 @@ public class AdsIndexImpl implements AdsIndex {
         _adsInvertedIndex = new AdsInvertedIndex();
     }
 
-<<<<<<< HEAD
     @Override
-    public IndexMatchResult indexMatch(List<String> keyWords) {
-        IndexMatchResult indexMatchResult = new IndexMatchResult();
+    public List<AdsStatsInfo> indexMatch(List<String> keyWords) {
+        List<AdsStatsInfo> adsStatsInfoList = new ArrayList<AdsStatsInfo>();
         if (keyWords != null) {
             Iterator<String> keywordsIterator = keyWords.iterator();
             Map<Integer, Integer> hitCounts = new HashMap<Integer, Integer>();
@@ -52,55 +52,24 @@ public class AdsIndexImpl implements AdsIndex {
                 if (adsInfo != null) {
                     CampaignInfo campaignInfo = _campaignInventory.findCampaign(adsInfo.getCampaignId());
                     if (campaignInfo.getBudget() > 0) {
-                        AdsStatsInfo adsStatsInfo = new AdsStatsInfo(adsId);
+                        AdsStatsInfo adsStatsInfo = new AdsStatsInfo(
+                                adsInfo.getCampaignId(), adsId);
                         adsStatsInfo.setRelevanceScore(hitCount*1.0f/adsInfo.getAdsKeyWords().size());
                         adsStatsInfo.setQualityScore(0.75f*adsInfo.getpClick()+0.25f*adsStatsInfo.getRelevanceScore());
                         adsStatsInfo.setRankScore(adsStatsInfo.getQualityScore() * adsInfo.getBid());
-                        indexMatchResult.insertAds(adsStatsInfo, adsInfo);
+                        adsStatsInfoList.add(adsStatsInfo);
                     }
                 }
             }
-=======
-  @Override
-  public List<AdsStatsInfo> indexMatch(List<String> keyWords) {
-    List<AdsStatsInfo> adsStatsInfoList = new ArrayList<AdsStatsInfo>();
-    if (keyWords != null) {
-      Iterator<String> keywordsIterator = keyWords.iterator();
-      Map<Integer, Integer> hitCounts = new HashMap<Integer, Integer>();
-      while (keywordsIterator.hasNext()) {
-        String keyWord = keywordsIterator.next();
-        List<Integer> matchedAdsIds = _adsInvertedIndex.retrieveIndex(keyWord);
-        if (matchedAdsIds != null) {
-          Iterator<Integer> matchedAdsIdsIterator = matchedAdsIds.iterator();
-          while (matchedAdsIdsIterator.hasNext()) {
-            Integer matchedAdsId = matchedAdsIdsIterator.next();
-            hitCounts.put(matchedAdsId, hitCounts.get(matchedAdsId) == null ? 1 : hitCounts.get(matchedAdsId) + 1);
-          }
         }
-      }
-      Iterator<Map.Entry<Integer, Integer>> hitCountsIterator = hitCounts.entrySet().iterator();
-      while (hitCountsIterator.hasNext()) {
-        Map.Entry<Integer, Integer> hitCountsEntry = hitCountsIterator.next();
-        Integer adsId = hitCountsEntry.getKey();
-        Integer hitCount = hitCountsEntry.getValue();
-        AdsInfo adsInfo = _adsInventory.findAds(adsId);
-        if (adsInfo != null) {
-          int campaignId = adsInfo.getCampaignId();
-          CampaignInfo campaignInfo = _campaignInventory.findCampaign(campaignId);
-          if (campaignInfo.getBudget() > 0) {
-            AdsStatsInfo adsStatsInfo = new AdsStatsInfo(campaignId);
-            adsStatsInfo.setRelevanceScore(hitCount*1.0f/adsInfo.getAdsKeyWords().size());
-            adsStatsInfoList.add(adsStatsInfo);
-          }
->>>>>>> master
-        }
-        return indexMatchResult;
+        return adsStatsInfoList;
     }
 
     @Override
-    public CampaignInventory buildIndex(String fileName) {
-        return _campaignInventory;
+    public Inventory buildIndex(String fileName) {
         // TODO Auto-generated method stub
+
+        return new Inventory(_adsInventory, _campaignInventory);
     }
 
 }
