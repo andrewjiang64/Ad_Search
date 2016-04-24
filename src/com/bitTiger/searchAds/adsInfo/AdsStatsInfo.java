@@ -1,14 +1,14 @@
 package com.bitTiger.searchAds.adsInfo;
 
 public class AdsStatsInfo {
-  private final int _adsId;
+  private final int _campaignId;
   private float _relevanceScore;
   private float _qualityScore;
   private float _rankScore;
   private float _cpc;
 
-  public AdsStatsInfo(int adsId) {
-     _adsId = adsId;
+  public AdsStatsInfo(int campaignId) {
+     _campaignId = campaignId;
      _relevanceScore = 0;
      _qualityScore = 0;
      _rankScore = 0;
@@ -47,8 +47,8 @@ public class AdsStatsInfo {
     _cpc = cpc;
   }
 
-  public int getAdsId() {
-    return _adsId;
+  public int getCampaignId() {
+    return _campaignId;
   }
 
 }
