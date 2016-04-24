@@ -1,30 +1,21 @@
 package com.bitTiger.searchAds.adsInfo;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.Map;
+import java.util.HashMap;
 
 public class AdsInventory {
-  private final List<AdsCampaignInfo> _adsInfo;
+  private final Map<Integer, AdsInfo> _adsInfoInventory;
 
   public AdsInventory() {
-    _adsInfo = new ArrayList<AdsCampaignInfo>();
+    _adsInfoInventory = new HashMap<Integer, AdsInfo>();
   }
 
-  public void insertAds(AdsCampaignInfo adsCampaignInfo) {
-    _adsInfo.add(adsCampaignInfo);
+  public void insertAds(AdsInfo adsInfo) {
+    _adsInfoInventory.put(adsInfo.getAdsId(), adsInfo);
   }
 
-  public AdsCampaignInfo findAds(int adsId) {
-    Iterator<AdsCampaignInfo> itr = _adsInfo.iterator();
-    while(itr.hasNext()) {
-      AdsCampaignInfo currentAds = itr.next();
-      if (currentAds.getAdsId() == adsId) {
-        return currentAds;
-      }
-    }
-    return null;
+  public AdsInfo findAds(int adsId) {
+    return _adsInfoInventory.get(adsId);
   }
 
 }

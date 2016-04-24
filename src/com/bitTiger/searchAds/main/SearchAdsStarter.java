@@ -1,11 +1,10 @@
 package com.bitTiger.searchAds.main;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import com.bitTiger.searchAds.adsInfo.AdsInventory;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
+import com.bitTiger.searchAds.adsInfo.CampaignInventory;
 import com.bitTiger.searchAds.adsOptimization.AdsOptimization;
 import com.bitTiger.searchAds.adsOptimization.AdsOptimizationImpl;
 import com.bitTiger.searchAds.index.AdsIndex;
@@ -16,12 +15,12 @@ import com.bitTiger.searchAds.queryParser.QueryParserImpl;
 public class SearchAdsStarter {
 
   public static String FILE_NAME = "ads-data.json";
-  public static int K = 2;
+  public static int K = 3;
   public static float FILTER_THRESHOLD = .5f;
 
   public static void main(String[] args) {
     AdsIndex adsIndex = new AdsIndexImpl();
-    AdsInventory adsInventory = adsIndex.buildIndex(FILE_NAME);
+    CampaignInventory campaignInventory = adsIndex.buildIndex(FILE_NAME);
 
     QueryParser queryParser = new QueryParserImpl();
 
@@ -34,7 +33,8 @@ public class SearchAdsStarter {
       AdsOptimization adsOptimizer = new AdsOptimizationImpl(candidateAds);
       AdsOptimization selectedAds = adsOptimizer.filterAds(FILTER_THRESHOLD)
                                                 .rankAdsAndSelectTopK(K)
-                                                .adsPricingAndAllocation(adsInventory);
+                                                .deDup()
+                                                .adsPricingAndAllocation(campaignInventory);
       System.out.println(selectedAds);
       reader.close();
     }
