@@ -107,6 +107,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
             if (budget >= price) {
                 campaignInventory.findCampaign(currentAds.getCampaignId())
                 .deductBudget(price);
+                currentAds.setCpc(price);
                 if (bid >= MAINLINE_RESERVE_PRICE) {
                     currentAds.setIsMainline(true);
                     candidateAds.add(currentAds);
