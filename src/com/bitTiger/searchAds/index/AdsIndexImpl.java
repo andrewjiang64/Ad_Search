@@ -1,18 +1,14 @@
 package com.bitTiger.searchAds.index;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import com.google.gson.*;
 import java.io.*;
-import java.net.InetSocketAddress;  
-import net.spy.memcached.MemcachedClient;
 
-import com.bitTiger.searchAds.adsInfo.Ads;
-import com.bitTiger.searchAds.adsInfo.Campaigns;
+
 import com.bitTiger.searchAds.adsInfo.AdsInfo;
 import com.bitTiger.searchAds.adsInfo.AdsInventory;
 import com.bitTiger.searchAds.adsInfo.AdsInvertedIndex;
@@ -25,7 +21,6 @@ public class AdsIndexImpl implements AdsIndex {
   private final AdsInventory _adsInventory;
   private final CampaignInventory _campaignInventory;
   private final AdsInvertedIndex _adsInvertedIndex;
-  private static final int memChacheStoreTime = 3600;
 
   public AdsIndexImpl() {
      _adsInventory = new AdsInventory();
@@ -36,14 +31,12 @@ public class AdsIndexImpl implements AdsIndex {
   @Override
   public List<AdsStatsInfo> indexMatch(List<String> keyWords) {
     List<AdsStatsInfo> adsStatsInfoList = new ArrayList<AdsStatsInfo>();
-    try {
-		MemcachedClient memcacheClient = new MemcachedClient(new InetSocketAddress("192.168.2.28", 11211));
 		if (keyWords != null) {
 		      Iterator<String> keywordsIterator = keyWords.iterator();
 		      Map<Integer, Integer> hitCounts = new HashMap<Integer, Integer>();
 		      while (keywordsIterator.hasNext()) {
 		        String keyWord = keywordsIterator.next();
-		        List<Integer> matchedAdsIds = (List<Integer>)memcacheClient.get(keyWord);
+		       List<Integer> matchedAdsIds = _adsInvertedIndex.retrieveIndex(keyWord);
 		        if (matchedAdsIds != null) {
 		          Iterator<Integer> matchedAdsIdsIterator = matchedAdsIds.iterator();
 		          while (matchedAdsIdsIterator.hasNext()) {
@@ -57,7 +50,7 @@ public class AdsIndexImpl implements AdsIndex {
 		        Map.Entry<Integer, Integer> hitCountsEntry = hitCountsIterator.next();
 		        Integer adsId = hitCountsEntry.getKey();
 		        Integer hitCount = hitCountsEntry.getValue();
-		        AdsInfo adsInfo = (AdsInfo)memcacheClient.get(String.valueOf(adsId));
+		       AdsInfo adsInfo = _adsInventory.findAds(adsId);
 		        if (adsInfo != null) {
 		          int campaignId = adsInfo.getCampaignId();
 		          CampaignInfo campaignInfo = _campaignInventory.findCampaign(campaignId);
@@ -69,10 +62,6 @@ public class AdsIndexImpl implements AdsIndex {
 		        }
 		      }
 		    }
-    } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
     
     return adsStatsInfoList;
   }
@@ -84,30 +73,16 @@ public class AdsIndexImpl implements AdsIndex {
 		Ads ads = gson.fromJson(new FileReader(fileName), Ads.class);
 		if(ads != null)
 		{
-			MemcachedClient memcacheClient = new MemcachedClient(new InetSocketAddress("192.168.2.28", 11211));
 			List<AdsInfo> adsInfo = ads.getAds();
 			for(AdsInfo adInfo : adsInfo)
 			{
 				List<String> keyWords = adInfo.getAdsKeyWords();
+				int adInfoId = adInfo.getAdsId();
 				for(String keyWord : keyWords)
 				{
-					if(memcacheClient.get(keyWord) == null)
-					{
-						int adInfoId = adInfo.getAdsId();
-						List<Integer> adInfoIds = new LinkedList<Integer>();
-						adInfoIds.add(adInfoId);
-						memcacheClient.add(keyWord, memChacheStoreTime , adInfoIds);
-					}
-					else
-					{
-						int adInfoId = adInfo.getAdsId();
-						List<Integer> adInfoIds = (LinkedList<Integer>)memcacheClient.get(keyWord);
-						adInfoIds.add(adInfoId);
-						memcacheClient.set(keyWord, memChacheStoreTime , adInfoIds);
-					}					
-				}
-				memcacheClient.add(String.valueOf(adInfo.getAdsId()), memChacheStoreTime, adInfo);
-				
+					_adsInvertedIndex.insertIndex(keyWord, adInfoId);
+				}	
+				_adsInventory.insertAds(adInfo);
 			}
 			Campaigns campaigns = gson.fromJson(new FileReader("CamPaign.json"), Campaigns.class);
 			if(campaigns != null)
@@ -129,12 +104,39 @@ public class AdsIndexImpl implements AdsIndex {
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	}
     return _campaignInventory;
     // TODO Auto-generated method stub
   }
+  
+    class Ads {
+
+		private final List<AdsInfo> _ads;
+		
+		public Ads(List<AdsInfo> ads)
+		{
+			_ads = ads;
+		}
+
+		public List<AdsInfo> getAds() {
+			return _ads;
+		}
+		
+
+	}
+    class Campaigns {
+    	private final List<CampaignInfo> _campaigns;
+    	public Campaigns(List<CampaignInfo> campaigns)
+    	{
+    		_campaigns = campaigns;
+    	}
+    	public List<CampaignInfo> Campaigns() {
+    		return _campaigns;
+    	}
+    	public List<CampaignInfo> getCampaigns() {
+    		return _campaigns;
+    	}
+    }
+    	
 
 }
