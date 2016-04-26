@@ -67,7 +67,7 @@ public class AdsIndexImpl implements AdsIndex {
   }
 
   @Override
-  public CampaignInventory buildIndex(String fileName) {
+  public CampaignInventory buildIndex(String fileName, String campaignFileName) {
 	  Gson gson = new Gson();
 	  try {
 		Ads ads = gson.fromJson(new FileReader(fileName), Ads.class);
@@ -84,7 +84,7 @@ public class AdsIndexImpl implements AdsIndex {
 				}	
 				_adsInventory.insertAds(adInfo);
 			}
-			Campaigns campaigns = gson.fromJson(new FileReader("CamPaign.json"), Campaigns.class);
+			Campaigns campaigns = gson.fromJson(new FileReader(campaignFileName), Campaigns.class);
 			if(campaigns != null)
 			{
 				List<CampaignInfo> campaignInfos = campaigns.getCampaigns();

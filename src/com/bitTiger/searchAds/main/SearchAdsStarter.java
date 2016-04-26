@@ -15,12 +15,13 @@ import com.bitTiger.searchAds.queryParser.QueryParserImpl;
 public class SearchAdsStarter {
 
   public static String FILE_NAME = "ads-data.json";
+  public static String Campaign_FILE_Name = "CamPaign.json";
   public static int K = 3;
   public static float FILTER_THRESHOLD = .5f;
 
   public static void main(String[] args) {
     AdsIndex adsIndex = new AdsIndexImpl();
-    CampaignInventory campaignInventory = adsIndex.buildIndex(FILE_NAME);
+    CampaignInventory campaignInventory = adsIndex.buildIndex(FILE_NAME,Campaign_FILE_Name );
 
     QueryParser queryParser = new QueryParserImpl();
 
