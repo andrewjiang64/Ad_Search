@@ -1,5 +1,6 @@
 package com.bitTiger.searchAds.main;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class SearchAdsStarter {
   public static int K = 3;
   public static float FILTER_THRESHOLD = .5f;
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws FileNotFoundException {
     AdsIndex adsIndex = new AdsIndexImpl();
     CampaignInventory campaignInventory = adsIndex.buildIndex(FILE_NAME,Campaign_FILE_Name );
 

@@ -67,7 +67,7 @@ public class AdsIndexImpl implements AdsIndex {
   }
 
   @Override
-  public CampaignInventory buildIndex(String fileName, String campaignFileName) {
+  public CampaignInventory buildIndex(String fileName, String campaignFileName) throws FileNotFoundException {
 	  Gson gson = new Gson();
 	  try {
 		Ads ads = gson.fromJson(new FileReader(fileName), Ads.class);
@@ -103,7 +103,7 @@ public class AdsIndexImpl implements AdsIndex {
 		e.printStackTrace();
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+		throw e;
 	}
     return _campaignInventory;
     // TODO Auto-generated method stub
