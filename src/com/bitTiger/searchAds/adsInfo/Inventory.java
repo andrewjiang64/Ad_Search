@@ -10,12 +10,12 @@ public class Inventory {
         this._campaignInventory = _campaignInventory;
     }
 
-    public AdsInventory getAdsInventory() {
-        return _adsInventory;
+    public AdsInfo findAds(Integer adsId) {
+        return _adsInventory.findAds(adsId);
     }
 
-    public CampaignInventory getCampaignInventory() {
-        return _campaignInventory;
+    public CampaignInfo findCampaign(Integer campaignId) {
+        return _campaignInventory.findCampaign(campaignId);
     }
 
 }

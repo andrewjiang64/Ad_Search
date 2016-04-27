@@ -1,6 +1,7 @@
 package com.bitTiger.searchAds.adsOptimization;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -13,117 +14,83 @@ import com.bitTiger.searchAds.adsInfo.Inventory;
 
 public class AdsOptimizationImpl implements AdsOptimization {
     private final List<AdsStatsInfo> _candidateAds;
-    private static float MAINLINE_RESERVE_PRICE;
-    private static float MIN_RESERVE_PRICE;
-
-    public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds,
-            float threshold1, float threshold2) {
-        _candidateAds = candidateAds;
-        MAINLINE_RESERVE_PRICE = threshold1;
-        MIN_RESERVE_PRICE = threshold2;
-    }
 
     public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds) {
+        if (candidateAds == null) {
+            throw new NullPointerException(
+                    "Null parameter: can't create the AdsOptimizationImpl object");
+        }
         _candidateAds = candidateAds;
+    }
+
+    @Override
+    public AdsOptimization filterAds(float minRelevanceScore,
+            float minReservePrice) {
+        // filter ads whose relevance score < min relevance score;
+        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
+        while (iterator.hasNext()) {
+            AdsStatsInfo info = iterator.next();
+            if (info.getRelevanceScore() < minRelevanceScore) {
+                iterator.remove();
+            }
+        }
+        // to do: filter ads whose bid < min reserve price
+        return this;
     }
 
     /*
-     * filter ads with low relevance score;
+     * returns a list that contains top k+1 AdsStatsInfo object from
+     * _candidateAds
      */
     @Override
-    public AdsOptimization filterAds() {
-        if (_candidateAds == null) {
-            return null;
+    public AdsOptimization selectTopK(int k) {
+        if (k <= 0) {
+            throw new IllegalArgumentException(
+                    "The parameter should be a positive integer.");
         }
-        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
-        final float MINIMAL = 0.01f; // threshold of lowest relevance score
-        while (iterator.hasNext()) {
-            AdsStatsInfo info = iterator.next();
-            if (info.getRelevanceScore() < MINIMAL) {
-                iterator.remove();
+        Collections.sort(_candidateAds, new Comparator<AdsStatsInfo>() {
+            @Override
+            public int compare(AdsStatsInfo ads1, AdsStatsInfo ads2) {
+                float diff = ads2.getRankScore() - ads1.getRankScore();
+                return diff == 0 ? 0 : (diff > 0 ? 1 : -1);
             }
+        });
+        if (_candidateAds.size() > k + 1) {
+            _candidateAds.subList(k + 1, _candidateAds.size()).clear();
         }
         return this;
     }
 
     @Override
-    public AdsOptimization selectTopK(int K) {
-        if (_candidateAds == null) {
-            return null;
-        }
-        PriorityQueue<AdsStatsInfo> adsHeap = new PriorityQueue<AdsStatsInfo>(
-                K, new Comparator<AdsStatsInfo>() {
-                    @Override
-                    public int compare(AdsStatsInfo ad1, AdsStatsInfo ad2) {
-                        float diff = ad1.getRankScore() - ad2.getRankScore();
-                        if (diff == 0) {
-                            return 0;
-                        }
-                        return diff < 0 ? -1 : 1;
-                    }
-                });
-        List<AdsStatsInfo> candidateAds = new ArrayList<AdsStatsInfo>();
-        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
-        while (iterator.hasNext()) {
-            AdsStatsInfo adsStatsInfo = iterator.next();
-            if (adsHeap.size() < K) {
-                adsHeap.offer(adsStatsInfo);
-            } else {
-                if (adsHeap.peek().getRankScore() <= adsStatsInfo
-                        .getRankScore()) {
-                    adsHeap.poll();
-                    adsHeap.offer(adsStatsInfo);
-                }
-            }
-        }
-        while (adsHeap.size() > 0) {
-            candidateAds.add(adsHeap.poll());
-        }
-        return new AdsOptimizationImpl(candidateAds);
-    }
-
-    @Override
-    public AdsOptimization adsPricingAndAllocation(Inventory inventory) {
-        if (_candidateAds == null) {
-            return null;
-        }
+    public AdsOptimization adsPricingAndAllocation(Inventory inventory,
+            float mainlineReservePrice, float minReservePrice) {
         // if only one ads in the list, it pays the minimal
         if (_candidateAds.size() == 1) {
-            _candidateAds.get(0).setCpc(MIN_RESERVE_PRICE);
+            AdsStatsInfo ads = _candidateAds.get(0);
+            ads.setCpc(inventory.findAds(ads.getAdsId()).getBid());
+            inventory.findCampaign(ads.getCampaignId()).deductBudget(
+                    ads.getCpc());
+            ads.setIsMainline(ads.getCpc() >= mainlineReservePrice);
             return this;
         }
 
-        AdsInventory adsInventory = inventory.getAdsInventory();
-        CampaignInventory campaignInventory = inventory.getCampaignInventory();
-        List<AdsStatsInfo> candidateAds = new ArrayList<AdsStatsInfo>();
         for (int i = 0; i < _candidateAds.size() - 1; i++) {
             AdsStatsInfo currentAds = _candidateAds.get(i);
             AdsStatsInfo nextAds = _candidateAds.get(i + 1);
-            float bid = adsInventory.findAds(nextAds.getAdsId()).getBid();
+            float bid = inventory.findAds(nextAds.getAdsId()).getBid();
             float price = nextAds.getQualityScore()
                     / currentAds.getQualityScore() * bid + 0.01f;
-            float budget = campaignInventory.findCampaign(
-                    currentAds.getCampaignId()).getBudget();
-            if (budget >= price) {
-                campaignInventory.findCampaign(currentAds.getCampaignId())
-                .deductBudget(price);
-                currentAds.setCpc(price);
-                if (bid >= MAINLINE_RESERVE_PRICE) {
-                    currentAds.setIsMainline(true);
-                    candidateAds.add(currentAds);
-                } else if (bid >= MIN_RESERVE_PRICE) {
-                    candidateAds.add(currentAds);
-                } // filter ads with bid price lower than minReservePrice
-            }
+            currentAds.setCpc(price);
+            inventory.findCampaign(currentAds.getCampaignId())
+            .deductBudget(price);
+            currentAds.setIsMainline(bid >= mainlineReservePrice);
         }
-        return new AdsOptimizationImpl(candidateAds);
+        _candidateAds.remove(_candidateAds.size() - 1);
+        return this;
     }
 
     @Override
     public String toString() {
-        if (_candidateAds == null) {
-            return "";
-        }
         String result = "Ads Id || Quality Score || Rank Score";
         Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
         while (iterator.hasNext()) {
@@ -136,9 +103,6 @@ public class AdsOptimizationImpl implements AdsOptimization {
 
     @Override
     public AdsOptimization deDup() {
-        if (_candidateAds == null) {
-            return null;
-        }
         // TODO Auto-generated method stub
         return new AdsOptimizationImpl(_candidateAds);
     }

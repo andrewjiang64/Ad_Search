@@ -19,7 +19,8 @@ public class SearchAdsStarter {
     public static String FILE_NAME = "ads-data.json";
     public static int K = 3;
     public static float MAINLINE_RESERVE_PRICE = 2f;
-    private static float MIN_RESERVE_PRICE = .5f;
+    public static float MIN_RESERVE_PRICE = .5f;
+    public static float MIN_RELEVANCE_SCORE = .01f;
 
     public static void main(String[] args) {
         AdsIndex adsIndex = new AdsIndexImpl();
@@ -33,11 +34,12 @@ public class SearchAdsStarter {
             String query = reader.next();
             List<String> keyWords = queryParser.parseQuery(query);
             List<AdsStatsInfo> candidateAds = adsIndex.indexMatch(keyWords);
-            AdsOptimization adsOptimizer = new AdsOptimizationImpl(
-                    candidateAds, MAINLINE_RESERVE_PRICE, MIN_RESERVE_PRICE);
-            AdsOptimization selectedAds = adsOptimizer.filterAds()
+            AdsOptimization adsOptimizer = new AdsOptimizationImpl(candidateAds);
+            AdsOptimization selectedAds = adsOptimizer
+                    .filterAds(MIN_RELEVANCE_SCORE, MIN_RESERVE_PRICE)
                     .selectTopK(K).deDup()
-                    .adsPricingAndAllocation(inventory);
+                    .adsPricingAndAllocation(inventory, MAINLINE_RESERVE_PRICE,
+                            MIN_RESERVE_PRICE);
             System.out.println(selectedAds);
             reader.close();
         }
