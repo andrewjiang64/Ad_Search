@@ -67,7 +67,7 @@ public class AdsIndexImpl implements AdsIndex {
   }
 
   @Override
-  public CampaignInventory buildIndex(String fileName, String campaignFileName) throws FileNotFoundException {
+  public CampaignInventory buildIndex(String fileName, String campaignFileName){
 	  Gson gson = new Gson();
 	  try {
 		Ads ads = gson.fromJson(new FileReader(fileName), Ads.class);
@@ -75,14 +75,18 @@ public class AdsIndexImpl implements AdsIndex {
 		{
 			List<AdsInfo> adsInfo = ads.getAds();
 			for(AdsInfo adInfo : adsInfo)
-			{
-				List<String> keyWords = adInfo.getAdsKeyWords();
-				int adInfoId = adInfo.getAdsId();
-				for(String keyWord : keyWords)
+			{ 
+				if(adInfo != null)
 				{
-					_adsInvertedIndex.insertIndex(keyWord, adInfoId);
-				}	
-				_adsInventory.insertAds(adInfo);
+					List<String> keyWords = adInfo.getAdsKeyWords();
+					int adInfoId = adInfo.getAdsId();
+					for(String keyWord : keyWords)
+					{
+						_adsInvertedIndex.insertIndex(keyWord, adInfoId);
+					}	
+					_adsInventory.insertAds(adInfo);
+				}
+				
 			}
 			Campaigns campaigns = gson.fromJson(new FileReader(campaignFileName), Campaigns.class);
 			if(campaigns != null)
@@ -90,7 +94,8 @@ public class AdsIndexImpl implements AdsIndex {
 				List<CampaignInfo> campaignInfos = campaigns.getCampaigns();
 				for(CampaignInfo campaignInfo : campaignInfos)
 				{
-					_campaignInventory.insertCampaign(campaignInfo);
+					if(campaignInfo != null)
+						_campaignInventory.insertCampaign(campaignInfo);
 					
 				}
 			}
@@ -103,7 +108,7 @@ public class AdsIndexImpl implements AdsIndex {
 		e.printStackTrace();
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
-		throw e;
+		e.printStackTrace();
 	}
     return _campaignInventory;
     // TODO Auto-generated method stub
