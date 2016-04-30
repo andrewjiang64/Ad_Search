@@ -1,15 +1,13 @@
 package com.bitTiger.searchAds.adsOptimization;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Comparator;
+import java.util.Set;
 
-import com.bitTiger.searchAds.adsInfo.AdsInventory;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
-import com.bitTiger.searchAds.adsInfo.CampaignInventory;
 import com.bitTiger.searchAds.adsInfo.Inventory;
 
 public class AdsOptimizationImpl implements AdsOptimization {
@@ -17,24 +15,31 @@ public class AdsOptimizationImpl implements AdsOptimization {
 
     public AdsOptimizationImpl(List<AdsStatsInfo> candidateAds) {
         if (candidateAds == null) {
-            throw new NullPointerException(
-                    "Null parameter: can't create the AdsOptimizationImpl object");
+            throw new NullPointerException("Null parameter: can't create the AdsOptimizationImpl object");
         }
         _candidateAds = candidateAds;
     }
 
     @Override
-    public AdsOptimization filterAds(float minRelevanceScore,
-            float minReservePrice) {
+    public AdsOptimization filterAds(Inventory inventory, float minRelevanceScore, float minReservePrice) {
+        if(minRelevanceScore < 0 || minReservePrice < 0){
+            throw new IllegalArgumentException("The parameter should be a non-negtive integer.");
+        }
+        if (inventory.adsQuantity() == 0) {
+            return this;
+        }
         // filter ads whose relevance score < min relevance score;
-        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
-        while (iterator.hasNext()) {
-            AdsStatsInfo info = iterator.next();
-            if (info.getRelevanceScore() < minRelevanceScore) {
+        for (Iterator<AdsStatsInfo> iterator = _candidateAds.iterator(); iterator.hasNext();) {
+            if (iterator.next().getRelevanceScore() < minRelevanceScore) {
                 iterator.remove();
             }
         }
-        // to do: filter ads whose bid < min reserve price
+        // filter ads whose bid < min reserve price
+        for (Iterator<AdsStatsInfo> iterator = _candidateAds.iterator(); iterator.hasNext();) {
+            if (inventory.findAds(iterator.next().getAdsId()).getBid() < minReservePrice) {
+                iterator.remove();
+            }
+        }
         return this;
     }
 
@@ -45,8 +50,10 @@ public class AdsOptimizationImpl implements AdsOptimization {
     @Override
     public AdsOptimization selectTopK(int k) {
         if (k <= 0) {
-            throw new IllegalArgumentException(
-                    "The parameter should be a positive integer.");
+            throw new IllegalArgumentException("The parameter should be a positive integer.");
+        }
+        if (optimizedAdsQuantity() == 0) {
+            return this;
         }
         Collections.sort(_candidateAds, new Comparator<AdsStatsInfo>() {
             @Override
@@ -62,14 +69,19 @@ public class AdsOptimizationImpl implements AdsOptimization {
     }
 
     @Override
-    public AdsOptimization adsPricingAndAllocation(Inventory inventory,
-            float mainlineReservePrice, float minReservePrice) {
-        // if only one ads in the list, it pays the minimal
-        if (_candidateAds.size() == 1) {
+    public AdsOptimization adsPricingAndAllocation(Inventory inventory, float mainlineReservePrice, float minReservePrice) {
+        if (mainlineReservePrice < 0 || minReservePrice < 0) {
+            throw new IllegalArgumentException("The parameter should be a non-negtive integer.");
+        }
+        // if no ads in the list
+        if (optimizedAdsQuantity() == 0) {
+            return this;
+        }
+        // if only one ads in the list, it pays its bid price
+        if (optimizedAdsQuantity() == 1) {
             AdsStatsInfo ads = _candidateAds.get(0);
             ads.setCpc(inventory.findAds(ads.getAdsId()).getBid());
-            inventory.findCampaign(ads.getCampaignId()).deductBudget(
-                    ads.getCpc());
+            inventory.findCampaign(ads.getCampaignId()).deductBudget(ads.getCpc());
             ads.setIsMainline(ads.getCpc() >= mainlineReservePrice);
             return this;
         }
@@ -78,12 +90,10 @@ public class AdsOptimizationImpl implements AdsOptimization {
             AdsStatsInfo currentAds = _candidateAds.get(i);
             AdsStatsInfo nextAds = _candidateAds.get(i + 1);
             float bid = inventory.findAds(nextAds.getAdsId()).getBid();
-            float price = nextAds.getQualityScore()
-                    / currentAds.getQualityScore() * bid + 0.01f;
+            float price = nextAds.getQualityScore() / currentAds.getQualityScore() * bid + 0.01f;
             currentAds.setCpc(price);
-            inventory.findCampaign(currentAds.getCampaignId())
-            .deductBudget(price);
-            currentAds.setIsMainline(bid >= mainlineReservePrice);
+            inventory.findCampaign(currentAds.getCampaignId()).deductBudget(currentAds.getCpc());
+            currentAds.setIsMainline(currentAds.getCpc() >= mainlineReservePrice);
         }
         _candidateAds.remove(_candidateAds.size() - 1);
         return this;
@@ -91,9 +101,11 @@ public class AdsOptimizationImpl implements AdsOptimization {
 
     @Override
     public String toString() {
+        if (optimizedAdsQuantity() == 0) {
+            return "";
+        }
         String result = "Ads Id || Quality Score || Rank Score";
-        Iterator<AdsStatsInfo> iterator = _candidateAds.iterator();
-        while (iterator.hasNext()) {
+        for (Iterator<AdsStatsInfo> iterator = _candidateAds.iterator(); iterator.hasNext();) {
             AdsStatsInfo info = iterator.next();
             result = result + info.getAdsId() + " " + info.getQualityScore()
                     + " " + info.getRankScore() + "\n";
@@ -103,7 +115,24 @@ public class AdsOptimizationImpl implements AdsOptimization {
 
     @Override
     public AdsOptimization deDup() {
-        // TODO Auto-generated method stub
-        return new AdsOptimizationImpl(_candidateAds);
+        if (optimizedAdsQuantity() == 0) {
+            return this;
+        }
+        // this set contains all existing campaign ids
+        Set<Integer> campaignSet = new HashSet<Integer>();
+        for (Iterator<AdsStatsInfo> iterator = _candidateAds.iterator(); iterator.hasNext();) {
+            Integer cid = iterator.next().getCampaignId();
+            if (campaignSet.contains(cid)) {
+                iterator.remove();
+            } else {
+                campaignSet.add(cid);
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public int optimizedAdsQuantity() {
+        return _candidateAds.size();
     }
 }

@@ -18,4 +18,7 @@ public class Inventory {
         return _campaignInventory.findCampaign(campaignId);
     }
 
+    public int adsQuantity() {
+        return _adsInventory.adsQuantity();
+    }
 }

@@ -35,11 +35,9 @@ public class SearchAdsStarter {
             List<String> keyWords = queryParser.parseQuery(query);
             List<AdsStatsInfo> candidateAds = adsIndex.indexMatch(keyWords);
             AdsOptimization adsOptimizer = new AdsOptimizationImpl(candidateAds);
-            AdsOptimization selectedAds = adsOptimizer
-                    .filterAds(MIN_RELEVANCE_SCORE, MIN_RESERVE_PRICE)
-                    .selectTopK(K).deDup()
-                    .adsPricingAndAllocation(inventory, MAINLINE_RESERVE_PRICE,
-                            MIN_RESERVE_PRICE);
+            AdsOptimization selectedAds = adsOptimizer.filterAds(inventory, MIN_RELEVANCE_SCORE,
+                    MIN_RESERVE_PRICE).selectTopK(K).deDup().adsPricingAndAllocation(inventory,
+                            MAINLINE_RESERVE_PRICE, MIN_RESERVE_PRICE);
             System.out.println(selectedAds);
             reader.close();
         }
