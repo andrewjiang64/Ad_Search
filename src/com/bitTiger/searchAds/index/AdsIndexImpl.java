@@ -18,17 +18,41 @@ import com.bitTiger.searchAds.adsInfo.CampaignInventory;
 
 public class AdsIndexImpl implements AdsIndex {
 
-  private final AdsInventory _adsInventory;
-  private final CampaignInventory _campaignInventory;
-  private final AdsInvertedIndex _adsInvertedIndex;
+  private AdsInventory _adsInventory;
+  private CampaignInventory _campaignInventory;
+  private AdsInvertedIndex _adsInvertedIndex;
 
   public AdsIndexImpl() {
      _adsInventory = new AdsInventory();
      _campaignInventory = new CampaignInventory();
      _adsInvertedIndex = new AdsInvertedIndex();
   }
+  
+  public AdsInventory get_adsInventory() {
+	return _adsInventory;
+}
 
-  @Override
+public void set_adsInventory(AdsInventory _adsInventory) {
+	this._adsInventory = _adsInventory;
+}
+
+public CampaignInventory get_campaignInventory() {
+	return _campaignInventory;
+}
+
+public void set_campaignInventory(CampaignInventory _campaignInventory) {
+	this._campaignInventory = _campaignInventory;
+}
+
+public AdsInvertedIndex get_adsInvertedIndex() {
+	return _adsInvertedIndex;
+}
+
+public void set_adsInvertedIndex(AdsInvertedIndex _adsInvertedIndex) {
+	this._adsInvertedIndex = _adsInvertedIndex;
+}
+
+@Override
   public List<AdsStatsInfo> indexMatch(List<String> keyWords) {
     List<AdsStatsInfo> adsStatsInfoList = new ArrayList<AdsStatsInfo>();
 		if (keyWords != null) {
