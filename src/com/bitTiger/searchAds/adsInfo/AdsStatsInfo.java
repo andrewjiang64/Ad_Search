@@ -74,10 +74,6 @@ public class AdsStatsInfo {
         _cpc = cpc;
     }
 
-    public int getCampaignId() {
-        return _campaignId;
-    }
-
     public int getAdsId() {
         return _adsId;
     }

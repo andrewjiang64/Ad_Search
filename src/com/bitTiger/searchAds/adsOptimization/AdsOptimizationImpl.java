@@ -19,7 +19,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
         }
         _candidateAds = candidateAds;
     }
-
+  
     @Override
     public AdsOptimization filterAds(Inventory inventory, float minRelevanceScore, float minReservePrice) {
         if (minRelevanceScore < 0 || minRelevanceScore > 1) {

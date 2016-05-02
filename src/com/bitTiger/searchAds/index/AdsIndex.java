@@ -9,7 +9,7 @@ import com.bitTiger.searchAds.adsInfo.Inventory;
 
 public interface AdsIndex {
 
-  CampaignInventory buildIndex(String fileName,String campaignFileName) ;
+	Inventory buildIndex(String fileName,String campaignFileName) ;
 
   List<AdsStatsInfo> indexMatch(List<String> keyWords);
 

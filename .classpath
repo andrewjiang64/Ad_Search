@@ -2,12 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/gson-2.3.1.jar"/>
-	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/junit-4.12.jar"/>
-	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/lucene-analyzers-common-6.0.0.jar"/>
-	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/lucene-queryparser-6.0.0.jar"/>
-	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/lucene-queries-6.0.0.jar"/>
-	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/lucene-core-6.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/Ad Search/Ad_Search/lib/gson-2.3.1.jar"/>
+	<classpathentry kind="lib" path="D:/Ad Search/Ad_Search/lib/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="D:/Ad Search/Ad_Search/lib/junit-4.12.jar"/>
+	<classpathentry kind="lib" path="D:/Ad Search/Ad_Search/lib/lucene-analyzers-common-6.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/Ad Search/Ad_Search/lib/lucene-core-6.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/Ad Search/Ad_Search/lib/lucene-queries-6.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/Ad Search/Ad_Search/lib/lucene-queryparser-6.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

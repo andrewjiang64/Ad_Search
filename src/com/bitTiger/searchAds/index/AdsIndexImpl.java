@@ -33,28 +33,18 @@ public class AdsIndexImpl implements AdsIndex {
 	return _adsInventory;
 }
 
-public void set_adsInventory(AdsInventory _adsInventory) {
-	this._adsInventory = _adsInventory;
-}
 
 public CampaignInventory get_campaignInventory() {
 	return _campaignInventory;
 }
 
-public void set_campaignInventory(CampaignInventory _campaignInventory) {
-	this._campaignInventory = _campaignInventory;
-}
+
 
 public AdsInvertedIndex get_adsInvertedIndex() {
 	return _adsInvertedIndex;
 }
 
-public void set_adsInvertedIndex(AdsInvertedIndex _adsInvertedIndex) {
-	this._adsInvertedIndex = _adsInvertedIndex;
-}
-
-@Override
-  public List<AdsStatsInfo> indexMatch(List<String> keyWords) {
+public List<AdsStatsInfo> indexMatch(List<String> keyWords) {
     List<AdsStatsInfo> adsStatsInfoList = new ArrayList<AdsStatsInfo>();
 		if (keyWords != null) {
 		      Iterator<String> keywordsIterator = keyWords.iterator();
@@ -80,7 +70,7 @@ public void set_adsInvertedIndex(AdsInvertedIndex _adsInvertedIndex) {
 		          int campaignId = adsInfo.getCampaignId();
 		          CampaignInfo campaignInfo = _campaignInventory.findCampaign(campaignId);
 		          if (campaignInfo.getBudget() > 0) {
-		            AdsStatsInfo adsStatsInfo = new AdsStatsInfo(campaignId);
+		            AdsStatsInfo adsStatsInfo = new AdsStatsInfo(campaignId,adsId);
 		            adsStatsInfo.setRelevanceScore(hitCount*1.0f/adsInfo.getAdsKeyWords().size());
 		            adsStatsInfoList.add(adsStatsInfo);
 		          }
@@ -88,9 +78,13 @@ public void set_adsInvertedIndex(AdsInvertedIndex _adsInvertedIndex) {
 		      }
 		    }
     
+    return adsStatsInfoList;
+  }
+
+    
 
   @Override
-  public CampaignInventory buildIndex(String fileName, String campaignFileName){
+  public Inventory buildIndex(String fileName, String campaignFileName){
 	  Gson gson = new Gson();
 	  try {
 		Ads ads = gson.fromJson(new FileReader(fileName), Ads.class);
@@ -133,7 +127,7 @@ public void set_adsInvertedIndex(AdsInvertedIndex _adsInvertedIndex) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    return _campaignInventory;
+    return new Inventory(_adsInventory,_campaignInventory);
     // TODO Auto-generated method stub
   }
   
