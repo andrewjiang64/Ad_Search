@@ -22,8 +22,13 @@ public class AdsOptimizationImpl implements AdsOptimization {
 
     @Override
     public AdsOptimization filterAds(Inventory inventory, float minRelevanceScore, float minReservePrice) {
-        if(minRelevanceScore < 0 || minReservePrice < 0){
-            throw new IllegalArgumentException("The parameter should be a non-negtive integer.");
+        if (minRelevanceScore < 0 || minRelevanceScore > 1) {
+            throw new IllegalArgumentException(
+                    "Minimum Relevance Score should be a number between 0 and 1.");
+        }
+        if (minReservePrice < 0) {
+            throw new IllegalArgumentException(
+                    "Minimum Reserve Price should be a non-negtive number.");
         }
         if (inventory.adsQuantity() == 0) {
             return this;

@@ -19,6 +19,18 @@ public class AdsStatsInfo {
         _isMainline = false;
     }
 
+    // for testing only
+    public AdsStatsInfo(int campaignId, int adsId, float relevanceScore, float cpc,
+            boolean isMainline) {
+        _campaignId = campaignId;
+        _adsId = adsId;
+        _relevanceScore = relevanceScore;
+        _qualityScore = 0;
+        _rankScore = 0;
+        _cpc = cpc;
+        _isMainline = isMainline;
+    }
+
     public boolean getIsMainline() {
         return _isMainline;
     }
