@@ -1,54 +1,84 @@
 package com.bitTiger.searchAds.adsInfo;
 
 public class AdsStatsInfo {
-  private final int _campaignId;
-  private float _relevanceScore;
-  private float _qualityScore;
-  private float _rankScore;
-  private float _cpc;
+    private final int _campaignId;
+    private final int _adsId;
+    private float _relevanceScore;
+    private float _qualityScore;
+    private float _rankScore;
+    private float _cpc;
+    private boolean _isMainline;
 
-  public AdsStatsInfo(int campaignId) {
-     _campaignId = campaignId;
-     _relevanceScore = 0;
-     _qualityScore = 0;
-     _rankScore = 0;
-     _cpc = 0;
-  }
+    public AdsStatsInfo(int campaignId, int adsId) {
+        _campaignId = campaignId;
+        _adsId = adsId;
+        _relevanceScore = 0;
+        _qualityScore = 0;
+        _rankScore = 0;
+        _cpc = 0;
+        _isMainline = false;
+    }
 
-  public float getRelevanceScore() {
-    return _relevanceScore;
-  }
+    // for testing only
+    public AdsStatsInfo(int campaignId, int adsId, float relevanceScore, float cpc,
+            boolean isMainline) {
+        _campaignId = campaignId;
+        _adsId = adsId;
+        _relevanceScore = relevanceScore;
+        _qualityScore = 0;
+        _rankScore = 0;
+        _cpc = cpc;
+        _isMainline = isMainline;
+    }
 
-  public void setRelevanceScore(float relevanceScore) {
-    _relevanceScore = relevanceScore;
-  }
+    public boolean getIsMainline() {
+        return _isMainline;
+    }
 
-  public float getQualityScore() {
-    return _qualityScore;
-  }
+    public void setIsMainline(boolean isMainline) {
+        this._isMainline = isMainline;
+    }
 
-  public void setQualityScore(float qualityScore) {
-    _qualityScore = qualityScore;
-  }
+    public float getRelevanceScore() {
+        return _relevanceScore;
+    }
 
-  public float getRankScore() {
-    return _rankScore;
-  }
+    public void setRelevanceScore(float relevanceScore) {
+        _relevanceScore = relevanceScore;
+    }
 
-  public void setRankScore(float rankScore) {
-    _rankScore = rankScore;
-  }
+    public float getQualityScore() {
+        return _qualityScore;
+    }
 
-  public float getCpc() {
-    return _cpc;
-  }
+    public void setQualityScore(float qualityScore) {
+        _qualityScore = qualityScore;
+    }
 
-  public void setCpc(float cpc) {
-    _cpc = cpc;
-  }
+    public float getRankScore() {
+        return _rankScore;
+    }
 
-  public int getCampaignId() {
+    public void setRankScore(float rankScore) {
+        _rankScore = rankScore;
+    }
+
+ public int getCampaignId() {
     return _campaignId;
   }
+    public float getCpc() {
+        return _cpc;
+    }
 
+    public void setCpc(float cpc) {
+        _cpc = cpc;
+    }
+
+    public int getCampaignId() {
+        return _campaignId;
+    }
+
+    public int getAdsId() {
+        return _adsId;
+    }
 }

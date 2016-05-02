@@ -15,18 +15,19 @@ import com.bitTiger.searchAds.adsInfo.AdsInvertedIndex;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInventory;
+import com.bitTiger.searchAds.adsInfo.Inventory;
 
 public class AdsIndexImpl implements AdsIndex {
+;
+    private final AdsInventory _adsInventory;
+    private final CampaignInventory _campaignInventory;
+    private final AdsInvertedIndex _adsInvertedIndex;
 
-  private AdsInventory _adsInventory;
-  private CampaignInventory _campaignInventory;
-  private AdsInvertedIndex _adsInvertedIndex;
-
-  public AdsIndexImpl() {
-     _adsInventory = new AdsInventory();
-     _campaignInventory = new CampaignInventory();
-     _adsInvertedIndex = new AdsInvertedIndex();
-  }
+    public AdsIndexImpl() {
+        _adsInventory = new AdsInventory();
+        _campaignInventory = new CampaignInventory();
+        _adsInvertedIndex = new AdsInvertedIndex();
+    }
   
   public AdsInventory get_adsInventory() {
 	return _adsInventory;
@@ -87,8 +88,6 @@ public void set_adsInvertedIndex(AdsInvertedIndex _adsInvertedIndex) {
 		      }
 		    }
     
-    return adsStatsInfoList;
-  }
 
   @Override
   public CampaignInventory buildIndex(String fileName, String campaignFileName){

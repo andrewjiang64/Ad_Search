@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInventory;
+import com.bitTiger.searchAds.adsInfo.Inventory;
 
 public interface AdsIndex {
 
