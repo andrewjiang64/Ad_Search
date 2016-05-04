@@ -77,4 +77,17 @@ public class AdsStatsInfo {
     public int getAdsId() {
         return _adsId;
     }
+    @Override
+    public boolean equals(Object o)
+    {
+    
+    	return true;
+    }
+    @Override
+    public int hashCode()
+    {
+    	int hash = _campaignId + _adsId;
+    	float value = _relevanceScore  + _qualityScore + _rankScore + _cpc;
+    	return (int)(value/hash);
+    }
 }
