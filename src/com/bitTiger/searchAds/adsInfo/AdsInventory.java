@@ -18,7 +18,7 @@ public class AdsInventory {
         return _adsInfoInventory.get(adsId);
     }
 
-    public int adsQuantity() {
+    public int size() {
         return _adsInfoInventory.size();
     }
 

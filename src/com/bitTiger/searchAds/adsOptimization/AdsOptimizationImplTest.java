@@ -12,10 +12,12 @@ import org.junit.Test;
 
 import com.bitTiger.searchAds.adsInfo.AdsInfo;
 import com.bitTiger.searchAds.adsInfo.AdsInventory;
+import com.bitTiger.searchAds.adsInfo.AdsInvertedIndex;
 import com.bitTiger.searchAds.adsInfo.AdsStatsInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInfo;
 import com.bitTiger.searchAds.adsInfo.CampaignInventory;
 import com.bitTiger.searchAds.adsInfo.Inventory;
+import com.bitTiger.searchAds.help.Help;
 
 public class AdsOptimizationImplTest {
     AdsOptimizationImpl ads;
@@ -23,7 +25,13 @@ public class AdsOptimizationImplTest {
 
     @Before
     public void setUp() throws Exception {
-        inventoryGenerator();
+        // inventoryGenerator();
+        AdsInventory adsInventory = Help.ReturnAdsInventory();
+        CampaignInventory campaignInventory = Help.ReturnCampaignInventory();
+        AdsInvertedIndex index = Help.ReturnAdsInvertedIndex();
+        ArrayList<AdsStatsInfo> adsList = Help.ReturnadsStatsInfoList();
+        ads = new AdsOptimizationImpl(adsList);
+        inventory = new Inventory(adsInventory, campaignInventory);
     }
 
     @After
@@ -32,11 +40,22 @@ public class AdsOptimizationImplTest {
         inventory = null;
     }
 
+    /************
+     * for filterAds
+     ***********/
     @Test
     public void filterAdsShouldReturnAValidOutput() {
         System.out.println("filterAdsShouldReturnAValidOutput");
-        ads.filterAds(inventory, 0.5f, 5f);
+        AdsOptimization result = ads.filterAds(inventory, 0.3f, 4.1f);
 
+        ArrayList<AdsStatsInfo> adsStatsInfoList = new ArrayList<AdsStatsInfo>();
+        AdsStatsInfo adsStatsInfo = new AdsStatsInfo(66, 1232, 0.6666667f, 0.0f, false);
+        adsStatsInfoList.add(adsStatsInfo);
+        adsStatsInfo = new AdsStatsInfo(67, 1234, 0.33333334f, 0.0f, false);
+        adsStatsInfoList.add(adsStatsInfo);
+        AdsOptimizationImpl expected = new AdsOptimizationImpl(adsStatsInfoList);
+        assertEquals(expected, result);
+        // to do
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -59,6 +78,64 @@ public class AdsOptimizationImplTest {
         .println("filterAdsShouldThrowIllegalArgumentException_For_MinRelevancePriceLessThanZero");
         ads.filterAds(inventory, 1, -1);
     }
+
+    /************
+     * for selectTopK
+     ***********/
+    @Test
+    public void selectTopKShouldReturnAValidOutput() {
+        System.out.println("selectTopKShouldReturnAValidOutput");
+        ads.selectTopK(0);
+        // to do, for candidateAds size > k + 1 and <= k+1
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void selectTopKShouldThrowIllegalArgumentException_For_KLessThanZero() {
+        System.out.println("selectTopKShouldThrowIllegalArgumentException_For_KLessThanZero");
+        ads.selectTopK(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void selectTopKShouldThrowIllegalArgumentException_For_KEqualToZero() {
+        System.out.println("selectTopKShouldThrowIllegalArgumentException_For_KEqualToZero");
+        ads.selectTopK(0);
+    }
+
+    /************
+     * for adsPricingAndAllocation
+     ***********/
+
+    @Test(expected = IllegalArgumentException.class)
+    public void adsPricingAndAllocationShouldThrowIllegalArgumentException_For_MainlineReservePriceLessThanZero() {
+        System.out
+        .println("adsPricingAndAllocationShouldThrowIllegalArgumentException_For_MainlineReservePriceLessThanZero");
+        ads.adsPricingAndAllocation(inventory, -1, 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void adsPricingAndAllocationShouldThrowIllegalArgumentException_For_MinReservePriceLessThanZero() {
+        System.out
+        .println("adsPricingAndAllocationShouldThrowIllegalArgumentException_For_MinReservePriceLessThanZero");
+        ads.adsPricingAndAllocation(inventory, 1, -1);
+    }
+
+    @Test
+    public void adsPricingAndAllocationShouldReturnAValidOutput() {
+        System.out.println("adsPricingAndAllocationShouldReturnAValidOutput");
+        ads.adsPricingAndAllocation(inventory, 2, 1);
+        // to do, for candidate size == 0, 1, >1
+    }
+
+    /************
+     * for deDup
+     ***********/
+    @Test
+    public void deDupShouldReturnAValidOutput() {
+        System.out.println("deDupShouldReturnAValidOutput");
+        ads.deDup();
+        // to do
+    }
+
 
     public void inventoryGenerator(){
         // AdsInfo(int adsId, List<String> adsKeyWords, float pClick, float bid,

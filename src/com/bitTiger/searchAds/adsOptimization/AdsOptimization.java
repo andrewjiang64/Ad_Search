@@ -12,6 +12,4 @@ public interface AdsOptimization {
 
     AdsOptimization adsPricingAndAllocation(Inventory inventory, float mainlineReservePrice,
             float minReservePrice);
-
-    int optimizedAdsQuantity();
 }

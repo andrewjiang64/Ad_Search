@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/lucene-core-6.0.0.jar"/>
 	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/lucene-queries-6.0.0.jar"/>
 	<classpathentry kind="lib" path="D:/Projects/Ad_Search/lib/lucene-queryparser-6.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

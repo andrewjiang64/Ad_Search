@@ -19,7 +19,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
         }
         _candidateAds = candidateAds;
     }
-  
+
     @Override
     public AdsOptimization filterAds(Inventory inventory, float minRelevanceScore, float minReservePrice) {
         if (minRelevanceScore < 0 || minRelevanceScore > 1) {
@@ -30,7 +30,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
             throw new IllegalArgumentException(
                     "Minimum Reserve Price should be a non-negtive number.");
         }
-        if (inventory.adsQuantity() == 0) {
+        if (inventory.size() == 0) {
             return this;
         }
         // filter ads whose relevance score < min relevance score;
@@ -57,7 +57,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
         if (k <= 0) {
             throw new IllegalArgumentException("The parameter should be a positive integer.");
         }
-        if (optimizedAdsQuantity() == 0) {
+        if (_candidateAds.size() == 0) {
             return this;
         }
         Collections.sort(_candidateAds, new Comparator<AdsStatsInfo>() {
@@ -79,11 +79,11 @@ public class AdsOptimizationImpl implements AdsOptimization {
             throw new IllegalArgumentException("The parameter should be a non-negtive integer.");
         }
         // if no ads in the list
-        if (optimizedAdsQuantity() == 0) {
+        if (_candidateAds.size() == 0) {
             return this;
         }
         // if only one ads in the list, it pays its bid price
-        if (optimizedAdsQuantity() == 1) {
+        if (_candidateAds.size() == 1) {
             AdsStatsInfo ads = _candidateAds.get(0);
             ads.setCpc(inventory.findAds(ads.getAdsId()).getBid());
             inventory.findCampaign(ads.getCampaignId()).deductBudget(ads.getCpc());
@@ -106,7 +106,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
 
     @Override
     public String toString() {
-        if (optimizedAdsQuantity() == 0) {
+        if (_candidateAds.size() == 0) {
             return "";
         }
         String result = "Ads Id || Quality Score || Rank Score";
@@ -120,7 +120,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
 
     @Override
     public AdsOptimization deDup() {
-        if (optimizedAdsQuantity() == 0) {
+        if (_candidateAds.size() == 0) {
             return this;
         }
         // this set contains all existing campaign ids
@@ -136,8 +136,4 @@ public class AdsOptimizationImpl implements AdsOptimization {
         return this;
     }
 
-    @Override
-    public int optimizedAdsQuantity() {
-        return _candidateAds.size();
-    }
 }
