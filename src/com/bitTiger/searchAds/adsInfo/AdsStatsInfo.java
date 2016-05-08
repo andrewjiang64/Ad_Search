@@ -19,14 +19,14 @@ public class AdsStatsInfo {
         _isMainline = false;
     }
 
-    // for testing only
-    public AdsStatsInfo(int campaignId, int adsId, float relevanceScore, float cpc,
+    public AdsStatsInfo(int campaignId, int adsId, float relevanceScore, float qualityScore,
+            float rankScore, float cpc,
             boolean isMainline) {
         _campaignId = campaignId;
         _adsId = adsId;
         _relevanceScore = relevanceScore;
-        _qualityScore = 0;
-        _rankScore = 0;
+        _qualityScore = qualityScore;
+        _rankScore = rankScore;
         _cpc = cpc;
         _isMainline = isMainline;
     }
@@ -63,9 +63,9 @@ public class AdsStatsInfo {
         _rankScore = rankScore;
     }
 
- public int getCampaignId() {
-    return _campaignId;
-  }
+    public int getCampaignId() {
+        return _campaignId;
+    }
     public float getCpc() {
         return _cpc;
     }
@@ -80,14 +80,14 @@ public class AdsStatsInfo {
     @Override
     public boolean equals(Object o)
     {
-    
-    	return true;
+
+        return true;
     }
     @Override
     public int hashCode()
     {
-    	int hash = _campaignId + _adsId;
-    	float value = _relevanceScore  + _qualityScore + _rankScore + _cpc;
-    	return (int)(value/hash);
+        int hash = _campaignId + _adsId;
+        float value = _relevanceScore  + _qualityScore + _rankScore + _cpc;
+        return (int)(value/hash);
     }
 }

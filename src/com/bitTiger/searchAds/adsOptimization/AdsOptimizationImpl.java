@@ -74,8 +74,8 @@ public class AdsOptimizationImpl implements AdsOptimization {
     }
 
     @Override
-    public AdsOptimization adsPricingAndAllocation(Inventory inventory, float mainlineReservePrice, float minReservePrice) {
-        if (mainlineReservePrice < 0 || minReservePrice < 0) {
+    public AdsOptimization adsPricingAndAllocation(Inventory inventory, float mainlineReservePrice) {
+        if (mainlineReservePrice < 0) {
             throw new IllegalArgumentException("The parameter should be a non-negtive integer.");
         }
         // if no ads in the list
@@ -134,6 +134,19 @@ public class AdsOptimizationImpl implements AdsOptimization {
             }
         }
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof AdsOptimizationImpl) {
+            return this._candidateAds.equals(((AdsOptimizationImpl) o)._candidateAds);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return _candidateAds.hashCode();
     }
 
 }

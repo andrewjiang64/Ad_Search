@@ -10,6 +10,5 @@ public interface AdsOptimization {
 
     AdsOptimization deDup();
 
-    AdsOptimization adsPricingAndAllocation(Inventory inventory, float mainlineReservePrice,
-            float minReservePrice);
+    AdsOptimization adsPricingAndAllocation(Inventory inventory, float mainlineReservePrice);
 }
