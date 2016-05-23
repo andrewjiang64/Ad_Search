@@ -1,5 +1,7 @@
 package com.bitTiger.searchAds.adsInfo;
 
+import com.bitTiger.searchAds.adsOptimization.AdsOptimizationImpl;
+
 public class AdsStatsInfo {
     private final int _campaignId;
     private final int _adsId;
@@ -77,12 +79,15 @@ public class AdsStatsInfo {
     public int getAdsId() {
         return _adsId;
     }
-    @Override
-    public boolean equals(Object o)
-    {
 
-        return true;
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof AdsStatsInfo) {
+            return this._adsId == ((AdsStatsInfo) o)._adsId;
+        }
+        return false;
     }
+
     @Override
     public int hashCode()
     {
