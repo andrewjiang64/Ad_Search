@@ -1,5 +1,7 @@
 package com.bitTiger.searchAds.adsInfo;
 
+import java.util.Objects;
+
 import com.bitTiger.searchAds.adsOptimization.AdsOptimizationImpl;
 
 public class AdsStatsInfo {
@@ -82,17 +84,43 @@ public class AdsStatsInfo {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof AdsStatsInfo) {
-            return this._adsId == ((AdsStatsInfo) o)._adsId;
+        if(o == null) {
+            return false;
         }
-        return false;
+        if (!(o instanceof AdsStatsInfo)) {
+            return false;
+        }
+        if(o == this){
+            return true;
+        }
+        AdsStatsInfo other = (AdsStatsInfo) o;
+        if (this._campaignId != other._campaignId) {
+            return false;
+        }
+        if (this._adsId != other._adsId) {
+            return false;
+        }
+        if (this._relevanceScore != other._relevanceScore) {
+            return false;
+        }
+        if (this._qualityScore != other._qualityScore) {
+            return false;
+        }
+        if (this._rankScore != other._rankScore) {
+            return false;
+        }
+        if (this._cpc != other._cpc) {
+            return false;
+        }
+        if (this._isMainline != other._isMainline) {
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public int hashCode()
-    {
-        int hash = _campaignId + _adsId;
-        float value = _relevanceScore  + _qualityScore + _rankScore + _cpc;
-        return (int)(value/hash);
+    public int hashCode() {
+        return Objects.hash(this._campaignId, this._adsId, this._relevanceScore,
+                this._qualityScore, this._rankScore, this._cpc, this._isMainline);
     }
 }
