@@ -112,8 +112,7 @@ public class AdsOptimizationImpl implements AdsOptimization {
         String result = "Ads Id || Quality Score || Rank Score";
         for (Iterator<AdsStatsInfo> iterator = _candidateAds.iterator(); iterator.hasNext();) {
             AdsStatsInfo info = iterator.next();
-            result = result + info.getAdsId() + " " + info.getQualityScore()
-                    + " " + info.getRankScore() + "\n";
+            result = result + info.toString() + "\n";
         }
         return result;
     }

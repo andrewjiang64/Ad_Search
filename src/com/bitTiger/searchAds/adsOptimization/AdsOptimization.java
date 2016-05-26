@@ -11,4 +11,7 @@ public interface AdsOptimization {
     AdsOptimization deDup();
 
     AdsOptimization adsPricingAndAllocation(Inventory inventory, float mainlineReservePrice);
+
+    @Override
+    boolean equals(Object o);
 }

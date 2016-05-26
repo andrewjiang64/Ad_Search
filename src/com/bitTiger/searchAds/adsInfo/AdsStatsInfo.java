@@ -94,33 +94,26 @@ public class AdsStatsInfo {
             return true;
         }
         AdsStatsInfo other = (AdsStatsInfo) o;
-        if (this._campaignId != other._campaignId) {
-            return false;
-        }
-        if (this._adsId != other._adsId) {
-            return false;
-        }
-        if (this._relevanceScore != other._relevanceScore) {
-            return false;
-        }
-        if (this._qualityScore != other._qualityScore) {
-            return false;
-        }
-        if (this._rankScore != other._rankScore) {
-            return false;
-        }
-        if (this._cpc != other._cpc) {
-            return false;
-        }
-        if (this._isMainline != other._isMainline) {
-            return false;
-        }
-        return true;
+        return this._campaignId == other._campaignId && this._adsId == other._adsId
+                && floatCompare(this._relevanceScore, other._relevanceScore)
+                && floatCompare(this._qualityScore, other._qualityScore)
+                && floatCompare(this._rankScore, other._rankScore)
+                && floatCompare(_cpc, other._cpc) && this._isMainline == other._isMainline;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(this._campaignId, this._adsId, this._relevanceScore,
                 this._qualityScore, this._rankScore, this._cpc, this._isMainline);
+    }
+
+    @Override
+    public String toString() {
+        return _campaignId + " " + _adsId + " " + _relevanceScore + " " + _qualityScore + " "
+                + _rankScore + " " + _cpc + " " + _isMainline;
+    }
+
+    private boolean floatCompare(float f1, float f2) {
+        return Math.abs(f1 - f2) < 0.2;
     }
 }
