@@ -1,5 +1,7 @@
 package com.bitTiger.searchAds.adsInfo;
 
+import java.util.Objects;
+
 import com.bitTiger.searchAds.adsOptimization.AdsOptimizationImpl;
 
 public class AdsStatsInfo {
@@ -82,17 +84,36 @@ public class AdsStatsInfo {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof AdsStatsInfo) {
-            return this._adsId == ((AdsStatsInfo) o)._adsId;
+        if(o == null) {
+            return false;
         }
-        return false;
+        if (!(o instanceof AdsStatsInfo)) {
+            return false;
+        }
+        if(o == this){
+            return true;
+        }
+        AdsStatsInfo other = (AdsStatsInfo) o;
+        return this._campaignId == other._campaignId && this._adsId == other._adsId
+                && floatCompare(this._relevanceScore, other._relevanceScore)
+                && floatCompare(this._qualityScore, other._qualityScore)
+                && floatCompare(this._rankScore, other._rankScore)
+                && floatCompare(_cpc, other._cpc) && this._isMainline == other._isMainline;
     }
 
     @Override
-    public int hashCode()
-    {
-        int hash = _campaignId + _adsId;
-        float value = _relevanceScore  + _qualityScore + _rankScore + _cpc;
-        return (int)(value/hash);
+    public int hashCode() {
+        return Objects.hash(this._campaignId, this._adsId, this._relevanceScore,
+                this._qualityScore, this._rankScore, this._cpc, this._isMainline);
+    }
+
+    @Override
+    public String toString() {
+        return _campaignId + " " + _adsId + " " + _relevanceScore + " " + _qualityScore + " "
+                + _rankScore + " " + _cpc + " " + _isMainline;
+    }
+
+    private boolean floatCompare(float f1, float f2) {
+        return Math.abs(f1 - f2) < 0.2;
     }
 }
